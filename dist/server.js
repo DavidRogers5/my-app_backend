@@ -25,7 +25,7 @@ var start = /*#__PURE__*/function () {
                 additionalHeaders: ['X-Requested-With']
               }
             }
-          }); // Register all API routes
+          }); // Register all API route
           _index["default"].forEach(function (route) {
             return server.route(route);
           });
