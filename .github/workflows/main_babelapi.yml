@@ -50,7 +50,7 @@ jobs:
 
       - name: List contents of dist folder (for debugging)
         run: |
-          ls -R ./dist  # This will list the contents of the dist folder after download
+          ls -R dist  # This will list the contents of the dist folder after download
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
@@ -58,5 +58,5 @@ jobs:
         with:
           app-name: 'babelapi'
           slot-name: 'Production'
-          package: ./dist  # Ensure this is the correct path to the dist folder
+          package: dist  # Ensure this is the correct path to the dist folder
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_205 }}  # Ensure the secret name matches exactly
