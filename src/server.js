@@ -16,7 +16,8 @@ const start = async () => {
             }
         });
 
-        // Register all API routes
+        
+        // Register all API route
         routes.forEach(route => server.route(route));
 
         // Optional: Add a simple root route for health check or test
