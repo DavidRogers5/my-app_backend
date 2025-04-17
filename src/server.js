@@ -1,59 +1,44 @@
-import Hapi, { server } from '@hapi/hapi';
-import routes from './routes';
-const DBConn = require("./DB.js");
+import Hapi from '@hapi/hapi';
+import routes from './routes/index.js'; // or './routes'
+const DBConn = require("./db.js");
 
-var cors = require('cors');
-
-const start = async () => 
-{
-    
-    const server = Hapi.server({
-        port:8080,
-        host: 'localhost' , 
-        "routes": {
-            "cors": {
-                //Angular
-                //"origin": ["http://localhost:4200"],
-
-                //React
-                //"origin": ["http://localhost:3000"],
-
-                //Python
-                "origin": ["http://localhost:8000"],
-
-                "headers": ["Accept", "Content-Type"],
-                "additionalHeaders": ["X-Requested-With"]
+const start = async () => {
+    try {
+        const server = Hapi.server({
+            port: process.env.PORT || 8080,
+            host: '0.0.0.0',
+            routes: {
+                cors: {
+                    origin: ['*'], // Allow all origins for now
+                    headers: ['Accept', 'Content-Type'],
+                    additionalHeaders: ['X-Requested-With']
+                }
             }
-        }
-    
+        });
 
-   
+        // Register all API routes
+        routes.forEach(route => server.route(route));
 
-});
+        // Optional: Add a simple root route for health check or test
+        server.route({
+            method: 'GET',
+            path: '/',
+            handler: () => 'API is live!'
+        });
 
-//Angular app IP is http://localhost:4200 , React is 3000
-
-routes.forEach(routes => server.route(routes));
-
-server.route({
-    method: 'GET',
-    path: '/hello',
-    handler: (req, h) => {  
-        
-        return 'Hello';        
-
+        // Start the server
+        await server.start();
+        console.log(`✅ Server is running at ${server.info.uri}`);
+    } catch (err) {
+        console.error('🔥 Server failed to start:', err);
+        process.exit(1);
     }
-});
+};
 
-
-await server.start();
-console.log('Server is listening on ${server.info.uri}');
-}
-
-process.on('unhandledRejection' , err => {
-    console.log(err);
+// Graceful shutdown on unhandled rejections
+process.on('unhandledRejection', err => {
+    console.error('Unhandled rejection:', err);
     process.exit(1);
 });
 
 start();
-
