@@ -1,3 +1,4 @@
+# Docs: https://github.com/Azure/webapps-deploy
 name: Build and deploy Node.js app to Azure Web App - babelapi
 
 on:
@@ -20,13 +21,13 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Install dependencies, build, test
+      - name: Install, build, and test
         run: |
           npm install
           npm run build --if-present
           npm run test --if-present
 
-      - name: Upload build output
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
@@ -40,15 +41,16 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          path: dist
+          path: .
 
-      - name: List contents of dist (debugging)
-        run: |
-          ls -R dist
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
@@ -56,5 +58,4 @@ jobs:
         with:
           app-name: 'babelapi'
           slot-name: 'Production'
-          package: dist
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_205 }}
+          package: .
