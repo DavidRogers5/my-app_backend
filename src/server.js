@@ -6,28 +6,32 @@ var cors = require('cors');
 
 const start = async () => 
 {
-    
+
+    //Angular version
+    /*
     const server = Hapi.server({
         port:8080,
         host: 'localhost' , 
         "routes": {
             "cors": {
-                //Angular
-                //"origin": ["http://localhost:4200"],
-
-                //React
-                //"origin": ["http://localhost:3000"],
-
-                //Python
-                "origin": ["http://localhost:8000"],
-
+                "origin": ["http://localhost:4200"],
                 "headers": ["Accept", "Content-Type"],
                 "additionalHeaders": ["X-Requested-With"]
             }
         }
-    
+    */
 
-   
+    //React version
+    const server = Hapi.server({
+        port:8080,
+        host: 'localhost' , 
+        "routes": {
+            "cors": {
+                "origin": ["http://localhost:3000"],
+                "headers": ["Accept", "Content-Type"],
+                "additionalHeaders": ["X-Requested-With"]
+            }
+        }
 
 });
 
