@@ -71,6 +71,7 @@
 // ✅ Uncomment this block when deploying to Azure
 // ================================
 
+console.log("🔥 App has started running...");
 
 import Hapi from '@hapi/hapi';
 import routes from './routes';
