@@ -21,7 +21,7 @@
     "mssql": "^9.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.27.0",
+    "@babel/cli": "^7.27.2",
     "@babel/node": "^7.26.0"
   }
 }
