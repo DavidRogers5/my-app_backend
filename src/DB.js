@@ -5,7 +5,7 @@ const config = {
     password: 'Impact2727*', // better stored in an app setting such as process.env.DB_PASSWORD
     server: 'localhost\\sqlexpress', // better stored in an app setting such as process.env.DB_SERVER
     port: 1433, // optional, defaults to 1433, better stored in an app setting such as process.env.DB_PORT
-    database: 'NavBarDB', // better stored in an app setting such as process.env.DB_NAME
+    database: 'NavBarDB', // better stored in an app setting such as process.env.DB_NAME need to see if works...
     authentication: {
         type: 'default'
     },
