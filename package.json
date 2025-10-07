@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node -r @babel/register src/server.js",
+    "start": "node dist/server.js",
     "build": "npx babel src -d dist"
   },
   "keywords": [],
@@ -25,3 +25,6 @@
     "@babel/node": "^7.26.0"
   }
 }
+
+
+
