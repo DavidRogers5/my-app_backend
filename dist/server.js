@@ -114,6 +114,22 @@ var start = /*#__PURE__*/function () {
             }
           });
           _context.next = 6;
+
+          // ✅ DB connectivity probe
+          server.route({
+            method: 'GET',
+            path: '/dbcheck',
+            handler: async (req, h) => {
+              try {
+                const r = await DBConn.ConnAndQuery('SELECT 1 AS ok');
+                return h.response({ ok: true, result: r.recordset?.[0] }).code(200);
+              } catch (e) {
+                console.error('DB check failed:', e);
+                return h.response({ ok: false, error: e.message }).code(500);
+              }
+            }
+          });
+
           return server.start();
         case 6:
           console.log("\u2705 Server is running at ".concat(server.info.uri));
