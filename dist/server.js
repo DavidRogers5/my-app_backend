@@ -1,5 +1,8 @@
 "use strict";
 
+var _interopRequireDefault2 = require("@babel/runtime/helpers/interopRequireDefault");
+var _regenerator2 = _interopRequireDefault2(require("@babel/runtime/regenerator"));
+var _asyncToGenerator3 = _interopRequireDefault2(require("@babel/runtime/helpers/asyncToGenerator"));
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
@@ -119,17 +122,41 @@ var start = /*#__PURE__*/function () {
           server.route({
             method: 'GET',
             path: '/dbcheck',
-            handler: async (req, h) => {
-              try {
-                const r = await DBConn.ConnAndQuery('SELECT 1 AS ok');
-                return h.response({ ok: true, result: r.recordset?.[0] }).code(200);
-              } catch (e) {
-                console.error('DB check failed:', e);
-                return h.response({ ok: false, error: e.message }).code(500);
+            handler: function () {
+              var _handler = (0, _asyncToGenerator3["default"])(/*#__PURE__*/_regenerator2["default"].mark(function _callee2(req, h) {
+                var _r$recordset, r;
+                return _regenerator2["default"].wrap(function _callee2$(_context2) {
+                  while (1) switch (_context2.prev = _context2.next) {
+                    case 0:
+                      _context2.prev = 0;
+                      _context2.next = 3;
+                      return DBConn.ConnAndQuery('SELECT 1 AS ok');
+                    case 3:
+                      r = _context2.sent;
+                      return _context2.abrupt("return", h.response({
+                        ok: true,
+                        result: (_r$recordset = r.recordset) === null || _r$recordset === void 0 ? void 0 : _r$recordset[0]
+                      }).code(200));
+                    case 7:
+                      _context2.prev = 7;
+                      _context2.t0 = _context2["catch"](0);
+                      console.error('DB check failed:', _context2.t0);
+                      return _context2.abrupt("return", h.response({
+                        ok: false,
+                        error: _context2.t0.message
+                      }).code(500));
+                    case 11:
+                    case "end":
+                      return _context2.stop();
+                  }
+                }, _callee2, null, [[0, 7]]);
+              }));
+              function handler(_x, _x2) {
+                return _handler.apply(this, arguments);
               }
-            }
+              return handler;
+            }()
           });
-
           return server.start();
         case 6:
           console.log("\u2705 Server is running at ".concat(server.info.uri));

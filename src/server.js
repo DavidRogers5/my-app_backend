@@ -1,9 +1,15 @@
+"use strict";
+
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+var _hapi = _interopRequireDefault(require("@hapi/hapi"));
+var _routes = _interopRequireDefault(require("./routes"));
 // ================================
 // 🌐 LOCAL DEVELOPMENT VERSION
 // ✅ This block is ACTIVE (uncommented) for local dev
 // ❌ Comment this entire block before deploying
 // ================================
-
 
 // import Hapi, { server } from '@hapi/hapi';
 // import routes from './routes';
@@ -26,7 +32,7 @@
 //             }
 //         }
 //     */
-    
+
 //     //React version
 //     const server = Hapi.server({
 //         port:8080,
@@ -63,8 +69,6 @@
 
 // start();
 
-
-
 // ================================
 // ☁️ AZURE DEPLOYMENT VERSION
 // ❌ This block is currently commented out
@@ -72,51 +76,75 @@
 // ================================
 
 console.log("🔥 App has started running...");
-
-import Hapi from '@hapi/hapi';
-import routes from './routes';
-const DBConn = require("./DB.js");
-
-const start = async () => {
-    const server = Hapi.server({
-        port: process.env.PORT || 8080,
-        host: '0.0.0.0', // Required for Azure
-        routes: {
-            cors: {
+var DBConn = require("./DB.js");
+var start = /*#__PURE__*/function () {
+  var _ref = (0, _asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function _callee() {
+    var server;
+    return _regenerator["default"].wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          server = _hapi["default"].server({
+            port: process.env.PORT || 8080,
+            host: '0.0.0.0',
+            // Required for Azure
+            routes: {
+              cors: {
                 origin: ['*'],
                 headers: ['Accept', 'Content-Type'],
                 additionalHeaders: ['X-Requested-With']
+              }
             }
-        }
-    });
+          });
+          _routes["default"].forEach(function (route) {
+            return server.route(route);
+          });
+          server.route({
+            method: 'GET',
+            path: '/',
+            handler: function handler() {
+              console.log("🔁 Root route hit");
+              return 'API is live!';
+            }
+          });
+          server.route({
+            method: 'GET',
+            path: '/hello',
+            handler: function handler() {
+              return 'Hello from Azure!';
+            }
+          });
+          _context.next = 6;
 
-    routes.forEach(route => server.route(route));
+          // ✅ DB connectivity probe
+          server.route({
+            method: 'GET',
+            path: '/dbcheck',
+            handler: async (req, h) => {
+              try {
+                const r = await DBConn.ConnAndQuery('SELECT 1 AS ok');
+                return h.response({ ok: true, result: r.recordset?.[0] }).code(200);
+              } catch (e) {
+                console.error('DB check failed:', e);
+                return h.response({ ok: false, error: e.message }).code(500);
+              }
+            }
+          });
 
-    server.route({
-        method: 'GET',
-        path: '/',
-        handler: () => {
-            console.log("🔁 Root route hit");
-            return 'API is live!';
-        }
-    });
-
-    server.route({
-        method: 'GET',
-        path: '/hello',
-        handler: () => {
-            return 'Hello from Azure!';
-        }
-    });
-
-    await server.start();
-    console.log(`✅ Server is running at ${server.info.uri}`);
-};
-
-process.on('unhandledRejection', err => {
-    console.log(err);
-    process.exit(1);
+          return server.start();
+        case 6:
+          console.log("\u2705 Server is running at ".concat(server.info.uri));
+        case 7:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee);
+  }));
+  return function start() {
+    return _ref.apply(this, arguments);
+  };
+}();
+process.on('unhandledRejection', function (err) {
+  console.log(err);
+  process.exit(1);
 });
-
 start();
-

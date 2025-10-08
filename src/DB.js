@@ -1,55 +1,36 @@
-const sql = require('mssql');
+"use strict";
+const sql = require("mssql");
 
 const config = {
-    user: 'NavBarLogin', // better stored in an app setting such as process.env.DB_USER
-    password: 'Impact2727*', // better stored in an app setting such as process.env.DB_PASSWORD
-    server: 'localhost\\sqlexpress', // better stored in an app setting such as process.env.DB_SERVER
-    port: 1433, // optional, defaults to 1433, better stored in an app setting such as process.env.DB_PORT
-    database: 'NavBarDB', // better stored in an app setting such as process.env.DB_NAME need to see if works...
-    authentication: {
-        type: 'default'
-    },
-    options: {
-        trustedConnection: true,
-        trustServerCertificate: true,
-        encrypt: false,        
-    }
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER,
+  database: process.env.DB_NAME,
+  port: 1433,
+  options: {
+    encrypt: true,                // required for Azure SQL
+    trustServerCertificate: false // proper cert validation
+  },
+  pool: { max: 10, min: 0, idleTimeoutMillis: 30000 }
+};
+
+let poolPromise;
+function getPool() {
+  if (!poolPromise) {
+    poolPromise = sql.connect(config);
+    sql.on("error", err => console.error("MSSQL pool error:", err));
+  }
+  return poolPromise;
 }
 
 async function ConnAndQuery(SQLPrm) {
-    try {
-        var poolConnection = await sql.connect(config);
-
-        console.log("Reading rows from the Table...");
-
-        //Angular version returns an object
-        
-        var resultSet = await poolConnection.request().query(SQLPrm);
-        console.log(`${resultSet.recordset.length} rows returned.`); 
-        JSON.stringify(resultSet.recordsets.recordset);
-        return resultSet;
-        
-
-
-        //React version returns smaller object
-        /*
-        var resultSet = await poolConnection.request().query(SQLPrm);
-        console.log(`${resultSet.recordset.length} rows returned.`); 
-        const recordsObj = resultSet.recordset;  
-        var SmallerResult = Object.keys(recordsObj).map((key) => [key, recordsObj[key]]);
-        
-        return SmallerResult;
-        */
-
-        
-        //const recordsArray = results.recordset;  
-
-        // close connection only when we're certain application is finished
-        poolConnection.close();
-
-    } catch (err) {
-        console.error(err.message);
-    }
+  try {
+    const pool = await getPool();
+    return await pool.request().query(SQLPrm);
+  } catch (err) {
+    console.error("DB error:", err.message);
+    throw err;
+  }
 }
 
 module.exports = { ConnAndQuery };
